@@ -1,0 +1,42 @@
+options:
+    bagboolean::%player%: false
+command /baguritirakasu [<number>]:
+    trigger:
+        if arg-1 is less than 0:
+            send "自然数以外が使えるとでも？"
+            stop
+        else if arg-1 is more than 20:
+            send "1~20まで使用可能だよん"
+            stop
+        else if arg-1 is less than 21:
+            if {bagtick::%player%} is more than 19:
+                send "連続で実行したbaguritirakasuコマンドのtick数が20を超えました。リセットしたい場合には/baguritirakasitakunaiコマンドを実行するか、クリエサーバーから退出してください。"
+            else if {bagtick::%player%} is less than 20:
+                command "kill %player%"
+                set {_wait} to "%arg-1% ticks" parsed as timespan
+                wait {_wait}
+                command "maxhealth %player%"
+                add arg-1 to {bagtick::%player%}
+        else:
+            send "引数にtick数を入力します。数字の分killとhealのスパンを長くします。短いと傾きが小さくなり、長いと傾きが大きくなります。やりすぎると死にます。"
+            send "現在の累計tick数: %{bagtick::%player%}%"
+command /baguritirakasitakunai:
+    trigger:
+        set {baglc::%player%} to location of player
+        set {bagtick::%player%} to 0
+        set {bagboolean::%player%} to true
+        command "kill %player%"
+on respawn:
+    if {bagboolean::%player%} is true:
+        teleport player to {baglc::%player%}
+        set {bagboolean::%player%} to false
+    else if {bagboolean::%player%} is false:
+        stop
+    stop
+on quit:
+    set {bagtick::%player%} to 0
+
+command /maxhealth <player>:
+    permission: maxhealth
+    trigger:
+        set health of arg-1 to max health of arg-1

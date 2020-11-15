@@ -1,0 +1,31 @@
+command /dice [<number>] [<number>]:
+    usage: &7[&3Dice&7]&a/dice [振る回数] [出る目の上限数]
+    trigger:
+        if arg-1 is not set:
+            send "&7[&3Dice&7]&a/dice [振る回数] [出る目の上限数]"
+        else if arg-1 is set:
+            if arg-1 is not number:
+                send "&7[&3Dice&7]&c引数には数字のみが使用可能です。"
+            else:
+                if arg-1 is more than 10:
+                    send "&7[&3Dice&7]&c振る回数には1～10の数字のみが使用可能です。"
+                else if arg-1 is 0:
+                    send "&7[&3Dice&7]&c頼むから自然数使ってくれ。"
+                else:
+                    if arg-2 is not set:
+                        send "&7[&3Dice&7]&a出る目の上限数を設定してください。"
+                    else:
+                        if arg-2 is not number:
+                            send "&7[&3Dice&7]&c引数には数字のみが使用可能です。"
+                        else:
+                            if arg-2 is more than 1000:
+                                send "&7[&3Dice&7]&c出る目の上限数は1~1000までが指定可能です。"
+                            else if arg-2 is 0:
+                                send "&7[&3Dice&7]&c君はボクをおちょくっているのか？自然数だってば。"
+                            else:
+                                broadcast "&7[&3Dice&7]&6%player%&7さんが&6%arg-1%&6d%arg-2%&7のDiceを振りました。"
+                                loop arg-1 times:
+                                    set {number.%player%} to a random integer between 1 and arg-2
+                                    broadcast "&7[&3Dice&7]&a結果&7: &6%{number.%player%}%"
+                                    command "/execute at @a run playsound minecraft:entity.item.pickup master @a ~ ~ ~ 1"
+                                    wait 0.2 seconds

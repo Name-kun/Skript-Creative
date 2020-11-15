@@ -1,0 +1,197 @@
+on chat:
+    if message contains "uranai" or "占い" or "omikuji" or "omikuzi" or "おみくじ":
+        wait 1 second
+        set {_fortune} to "&6&l大吉" or "&d&l吉" or "&a&l中吉" or "&a&l小吉" or "&a&l末吉" or "&b&l凶" or "&7&l大凶"
+        make console execute command "say &6%player%&rさんの運勢&a: %{_fortune}%"
+on armor change:
+    if event-item is leather leggings named "&6激臭レギンス" with lore "臭すぎて着用すると燃え上がるらしい...。":
+        set {hakka.%player%} to true
+        while {hakka.%player%} is true:
+            ignite player
+            loop all entities in radius 5 around the player:
+                loop-entities is not player
+                ignite loop-entities
+                send "%loop-entities%: くせえ"
+                wait 1 second
+            wait 1 tick
+    else:
+        set {hakka.%player%} to false
+        extinguish player
+command /g0:
+    permission: gamemode.admin
+    trigger:
+        set player's gamemode to survival
+command /g1:
+    permission: gamemode.admin
+    trigger:
+        set player's gamemode to creative
+command /g2:
+    permission: gamemode.admin
+    trigger:
+        set player's gamemode to adventure
+command /g3:
+    permission: gamemode.admin
+    trigger:
+        set player's gamemode to spectator
+options:
+#痛がるプレイヤーを変更できます
+    victim: "NameKun"
+on damage:
+    attacker is player
+    victim is {@victim}
+    set {_random} to "1" or "2" or "3"
+    set {_message} to "いてっ" or "痛いよ" or "痛いってば" or "やめてよ" or "うわん" or "おっふ" or "&dいいかも..."
+    if {_random} is "1":
+        send {_message} to attacker
+    else:
+        stop
+
+#液体設置関係
+command /examwrong:
+	trigger:
+		command "mvspawn %player%"
+		send "&c不正解です。もう一度やり直してください。"
+on rightclick:
+	player is in the region "permitroom"
+	line 1 of clicked block is "&e【権限付与】"
+	line 2 of clicked block is "なめと貴方の約束..."
+	line 4 of clicked block is "&a[RightClick]"
+	if player do not have permission "placeliquid":
+		command "lp user %player% permission set placeliquid true"
+		command "mvspawn %player%"
+		send "&e&l液体設置権限を付与しました。"
+	else:
+		command "mvspawn %player%"
+		send "&c既にその権限を所持しています。"
+on place:
+	block is water
+	if player do not have permission "placeliquid":
+		cancel event
+		send "&c液体を設置するにはスポーン付近にある液体設置権限審査に合格する必要があります。"
+on place:
+	block is lava
+	if player do not have permission "placeliquid":
+		cancel event
+		send "&c液体を設置するにはスポーン付近にある液体設置権限審査に合格する必要があります。"
+
+#各種コマンド
+command /hat:
+    executable by: players
+    trigger:
+        if player's tool is air:
+            send "&7[&6Hat&7]&c手元にアイテムがありません。"
+            stop
+        send "&7[&6Hat&7]&aアイテムを装着しました。"
+        set player's helmet to player's tool
+        remove player's tool from player's inventory
+command /count <number>:
+    permission: count
+    trigger:
+        broadcast "&a%arg-1%秒間&7のカウントです。"
+        wait 1 second
+        broadcast "&e3"
+        wait 1 second
+        broadcast "&62"
+        wait 1 second
+        broadcast "&c1"
+        wait 1 second
+        broadcast "&aSTART!"
+        set {_wait} to "%arg-1% seconds" parsed as timespan
+        wait {_wait}
+        broadcast "&6終了！"
+
+#StopWatch
+on leftclick with magma cream:
+    item's name is "&e&lStopWatch"
+    if {timer.%player%} is true:
+        send "&7[&e&lStopWatch&7]&c既に計測を開始しています。"
+    else:
+        reset {diff::%uuid of player%}
+        set {timer.%player%} to true
+        set {_start} to now
+        send "&7[&e&lStopWatch&7]&a計測を開始しました。"
+        while {timer.%player%} is true:
+            set {diff::%uuid of player%} to difference between now and {_start}
+            wait 1 second
+on rightclick with magma cream:
+    item's name is "&e&lStopWatch"
+    if {timer.%player%} is true:
+        set {timer.%player%} to false
+        send "&7[&e&lStopWatch&7]&e計測を終了しました。"
+        send "&aTime: &6&l%{diff::%uuid of player%}%"
+    else:
+        send "&aPreviousTime: &6&l%{diff::%uuid of player%}%"
+command /stopwatch:
+    trigger:
+        set slot 0 of player's inventory to magma cream named "&e&lStopWatch" with lore "&6左クリック: &a計測開始" and "&6右クリック: &a計測終了"
+
+command /forcechat [<player>] [<text>]:
+    permission: forcechat
+    trigger:
+        if arg-1 is set:
+            if arg-2 is set:
+                force arg-1 to say colored arg-2
+            else:
+                send "&7[&3ForceChat&7]&9二つ目の引数に送信させたいメッセージを入力してください。"
+        else:
+            send "&7[&3ForceChat&7]&6/forcechat [player] [message]"
+            send "&7[&3ForceChat&7]&6player&7に&6message&7を強制的に送信させる。(コマンドも可)"
+command /console [<text>]:
+    permission: console
+    trigger:
+        if arg-1 is set:
+            make console execute command "%arg 1%"
+        else:
+            send "&7[&2Console&7]&9引数に送信させたいメッセージを入力してください。"
+#tntrun
+command /tntrun:
+    trigger:
+        if {tntrun.%player%} is false:
+            set {tntrun.%player%} to true
+            send "&atntrunができるようになったで"
+        else:
+            set {tntrun.%player%} to false
+            send "&atntrunができなくなったで"
+        
+on walking on sand or gravel:
+    if event-block is sand or gravel:
+        if block below event-block is tnt:
+            if {tntrun.%player%} is true:
+                wait 0.3 seconds
+                set block at event-block and block below event-block to air
+
+#banid
+command /banid:
+    trigger:
+        message "&7[&6BanID&7] &b＃00:&rその他(管理者の判断) &b＃01:&r建造物破壊など &b＃02:&r暴言、他人への迷惑 &b＃03:&rクライアントの使用 &b＃04:&rスパム等 &b＃05:&r悪質なコンテンツへのリンク(アダルトサイト含)"
+
+#なぞafk
+every second:
+    loop all players:
+        if loop-player is in the region "lobby_afk":
+            set {timer::%uuid of loop-player%} to true
+            if {timer::%uuid of loop-player%} is true:
+                send action bar "&a放置時間: &6&l%{time::%uuid of loop-player%}% 秒" to loop-player
+                add 1 to {time::%uuid of loop-player%}
+        else:
+            if {timer::%uuid of loop-player%} is true:
+                set {timer::%uuid of loop-player%} to false
+                set {time::%uuid of loop-player%} to 0
+
+#たまご
+on rightclick with snowball:
+    if player's offhand tool is wool:
+        if player's target block is wool:
+            if {rancol.%player%} is true:
+                set target block to white wool or orange wool or magenta wool or light blue wool or yellow wool or lime wool or pink wool or gray wool or light gray wool or cyan wool or purple wool or blue wool or brown wool or green wool or red wool or black wool
+            if {rancol.%player%} is false:
+                set target block to player's offhand tool
+
+command /randomcolor:
+    trigger:
+        if {rancol.%player%} is false:
+            set {rancol.%player%} to true
+            send "&aランダムで色が塗れるぞ！！"
+        else:
+            set {rancol.%player%} to false
+            send "&a単色だけになっちゃった..."

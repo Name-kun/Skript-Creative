@@ -1,0 +1,48 @@
+#rename
+command /rename <text>:
+    usage: &7[&2Rename&7]&6/rename <name>
+    trigger:
+        if arg-1 is not set:
+            send "&7[&2Rename&7]&a/renameの後に付けたい名前を入力してください。"
+        else:
+            if player's tool is air:
+                send "&7[&2Rename&7]&c手にアイテムを持っていません。"
+            else:
+                if name of player's tool is arg-1:
+                    send "&7[&2Rename&7]&c既に同じ名前が付いています。"
+                else:
+                    set name of player's tool to colored arg-1
+                    send "&7[&2Rename&7]&6'%arg-1%'&aに名前を変更しました。"
+#setlore
+command /setlore [<text>] [<number>] [<text>]:
+    usage: &7[&2SetLore&7]&6/setlore help
+    trigger:
+        if arg-1 is not set:
+            send "&7[&2SetLore&7]&6/setlore help"
+        else if arg-1 is "help":
+            send "&7[&2SetLore&7]&6/setlore help&7: helpを表示します。"
+            send "&7[&2SetLore&7]&6/setlore set&7: loreを設定します。"
+            send "&7[&2SetLore&7]&6/setlore reset&7: loreを削除します。"
+        else if arg-1 is "set":
+            if arg-2 is not set:
+                send "&7[&2SetLore&7]&6/setlore set <line>"
+            else:
+                if arg-3 is not set:
+                    send "&7[&2SetLore&7]&6/setlore set <line> <lore>"
+                else:
+                    if player's tool is air:
+                        send "&7[&2SetLore&7]&cアイテムを手に持つ必要があります。"
+                    else:
+                        set line number arg of lore of player's tool to colored arg-3
+                        send "&7[&2SetLore&7]&e%arg-2%&e行目&7のloreを&6'%arg-3%'に変更しました。"
+        else if arg-1 is "reset":
+            if arg-2 is not set:
+                send "&7[&2SetLore&7]&6/setlore reset <line>"
+            else:
+                if player's tool is air:
+                    send "&7[&2SetLore&7]&cアイテムを手に持つ必要があります。"
+                else:
+                    set line number arg of lore of player's tool to ""
+                    send "&7[&2SetLore&7]&e%arg-2%&e行目&7のloreを削除しました。"
+        else:
+            send "&7[&2SetLore&7]&6/setlore help"
